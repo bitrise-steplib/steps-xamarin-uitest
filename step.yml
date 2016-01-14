@@ -1,0 +1,125 @@
+title: "Xamarin UITest"
+summary: Xamarin UITest
+description: |-
+  Xamarin UITest
+
+  Use configuration-platform combination for automatig tests, which:
+
+  # for ANDROID project:
+
+    * Do not 'Use Shared Mono runtime', see: ANDROID_PROJECT_TO_TEST/Options/Build/Android Build/General/Packaging and Deployment
+    * Use 'Enable developer instarumentation (debugging and profiling)', see: ANDROID_PROJECT_TO_TEST/Options/Build/Android Build/General/Debugging Options
+
+  # for iOS project
+
+    * Supports architecture: i386, see: IOS_PROJECT_TO_TEST/Options/Build/iOS Build/Code Generation & Runtime/Supported Architectures
+    * Enables debugging, see: IOS_PROJECT_TO_TEST/Options/Build/iOS Debug/Debugging & Instrumentation/Enable debugging
+
+  Add following to ConfigureApp.Android:
+
+  * string apkPath = Environment.GetEnvironmentVariable ("ANDROID_APK_PATH");
+  * string emulatorSerial = Environment.GetEnvironmentVariable ("ANDROID_EMULATOR_SERIAL");
+  * return ConfigureApp
+        .Android
+        .ApkFile (apkPath)
+        .DeviceSerial(emulatorSerial)
+        .StartApp();
+
+  Add following to ConfigureApp.iOS:
+
+  * string deviceUDID = Environment.GetEnvironmentVariable("IOS_SIMULATOR_UDID");
+  * string appBundlePath = Environment.GetEnvironmentVariable("APP_BUNDLE_PATH");
+  * return ConfigureApp
+        .iOS
+        .AppBundle(appBundlePath)
+        .DeviceIdentifier(deviceUDID)
+        .StartApp();
+
+website: https://github.com/bitrise-steplib/steps-xamarin-uitest
+source_code_url: https://github.com/bitrise-steplib/steps-xamarin-uitest
+support_url: https://github.com/bitrise-steplib/steps-xamarin-uitest/issues
+host_os_tags:
+  - osx-10.10
+project_type_tags:
+  - xamarin
+type_tags: []
+is_requires_admin_user: false
+is_always_run: false
+is_skippable: false
+dependencies: []
+run_if: ""
+inputs:
+  - xamarin_project: $BITRISE_PROJECT_PATH
+    opts:
+      title: Path to Xamarin Project
+      description: |
+        Path to Xamarin Solution
+      is_required: true
+      is_expand: true
+  - xamarin_configuration: Debug
+    opts:
+      title: Xamarin project configuration
+      description: |
+        Xamarin project configuration
+      is_required: true
+      is_expand: true
+  - xamarin_platform: AnyCPU
+    opts:
+      title: Xamarin platform
+      description: |
+        Xamarin platform
+      is_required: true
+      is_expand: true
+  - test_to_run:
+    opts:
+      title: Test Fixture name to run
+      description: |
+        Comma-separated list of Test Fixture to run.
+        A couple of format examples:
+        * ExampleUITest.UITests.Tests(iOS)
+        * ExampleUITest.UITests.Tests(Android)
+
+        If not specified all tests will run.
+      is_required: false
+      is_expand: true
+      is_dont_change_value: false
+  - emulator_serial: $BITRISE_EMULATOR_SERIAL
+    opts:
+      title: Emulator serial to boot
+      description: |
+        Emulator serial to boot.
+        Defined emulator should already running.
+      is_required: false
+      is_expand: true
+      is_dont_change_value: false
+  - simulator_device: iPhone 6
+    opts:
+      title: Device
+      description: |
+        Set it as it is shown in Xcode's device selection dropdown UI.
+        A couple of examples (the actual available options depend on which versions are installed):
+        * iPhone 6
+        * iPhone 6 Plus
+        * iPad
+        * iPad Air
+      is_required: false
+      is_expand: true
+  - simulator_os_version:
+    opts:
+      title: OS version
+      description: |
+        A couple of format examples:
+        * iOS 8.4
+        * iOS 9.1
+      is_required: false
+      is_expand: true
+outputs:
+- BITRISE_XAMARIN_TEST_RESULT:
+  opts:
+    title: Result of the tests. 'succeeded' or 'failed'.
+    value_options:
+    - succeeded
+    - failed
+- BITRISE_XAMARIN_TEST_FULL_RESULTS_TEXT:
+  opts:
+    title: Result of the tests.
